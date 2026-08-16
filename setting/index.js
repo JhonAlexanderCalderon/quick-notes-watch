@@ -1,5 +1,5 @@
 import { CATEGORIES, emptyNotesData } from '../utils/categories'
-import { pullFromFirebase } from '../utils/firestore-sync'
+import { pullFromFirebase, pushToFirebase, getSyncStatus } from '../utils/firestore-sync'
 
 function genId() {
   return 'n' + Date.now() + Math.floor(Math.random() * 1000)
@@ -16,6 +16,8 @@ AppSettingsPage({
     activeCategory: CATEGORIES[0].id,
     data: emptyNotesData(),
     pendingDeleteId: '',
+    syncStatus: { lastSyncAt: '', lastSyncDirection: '', lastError: '' },
+    syncing: false,
     props: {},
   },
 
@@ -30,6 +32,8 @@ AppSettingsPage({
     this.state.data = rawData ? JSON.parse(rawData) : emptyNotesData()
     this.state.activeCategory = props.settingsStorage.getItem('activeCategory') || CATEGORIES[0].id
     this.state.pendingDeleteId = props.settingsStorage.getItem('pendingDeleteId') || ''
+    this.state.syncStatus = getSyncStatus(props.settingsStorage)
+    this.state.syncing = props.settingsStorage.getItem('_fbSyncing') === '1'
   },
 
   saveData() {
@@ -78,6 +82,26 @@ AppSettingsPage({
     )
     this.state.props.settingsStorage.setItem('pendingDeleteId', '')
     this.saveData()
+  },
+
+  // Manual health check: attempts both directions against Firestore so a
+  // failure here means the connection itself is the problem, not just one
+  // particular request. Success/failure gets written by firestore-sync
+  // into settingsStorage (_fbLastSyncAt / _fbLastError), which setState
+  // reads back on the rebuild this triggers — that's what the diagnostics
+  // panel below actually displays.
+  async syncNow() {
+    const storage = this.state.props.settingsStorage
+    storage.setItem('_fbSyncing', '1')
+    try {
+      const cloud = await pullFromFirebase(storage)
+      if (cloud) storage.setItem('notesData', JSON.stringify(cloud))
+      await pushToFirebase(storage, JSON.parse(storage.getItem('notesData') || '{}'))
+    } catch (e) {
+      // Already recorded in _fbLastError by firestore-sync.
+    } finally {
+      storage.setItem('_fbSyncing', '')
+    }
   },
 
   build(props) {
@@ -214,10 +238,51 @@ AppSettingsPage({
       )
     })
 
-    // No confirmed static-text component in this UI library (only View /
-    // Button / TextInput are documented) — skip an empty-state message
-    // rather than guess at an unverified API; "+ Agregar nota" is visible
-    // and self-explanatory either way.
-    return View({ style: { padding: '14px 16px' } }, [tabs, addButton, ...noteItems])
+    const status = this.state.syncStatus
+    const lastSyncText = status.lastSyncAt
+      ? `Ultima conexion ok: ${new Date(status.lastSyncAt).toLocaleString()}`
+      : 'Todavia no se conecto con la nube'
+
+    const diagnostics = View(
+      {
+        style: {
+          border: '1px solid ' + (status.lastError ? '#FCA5A5' : '#DCFCE7'),
+          borderRadius: '8px',
+          padding: '10px',
+          marginTop: '18px',
+          backgroundColor: status.lastError ? '#FEF2F2' : '#F0FDF4',
+        },
+      },
+      [
+        Text({ bold: true, style: { fontSize: '12px', color: '#333333' } }, 'Conexion con la nube (respaldo)'),
+        Text({ style: { fontSize: '11px', color: '#555555', marginTop: '4px' } }, lastSyncText),
+        status.lastError &&
+          Text(
+            { style: { fontSize: '11px', color: '#B91C1C', marginTop: '4px' } },
+            `Ultimo error: ${status.lastError}`
+          ),
+        Button({
+          label: this.state.syncing ? 'Sincronizando...' : 'Sincronizar ahora',
+          style: {
+            fontSize: '12px',
+            lineHeight: '28px',
+            borderRadius: '20px',
+            background: '#409EFF',
+            color: 'white',
+            textAlign: 'center',
+            marginTop: '8px',
+          },
+          onClick: () => this.syncNow(),
+        }),
+        Text(
+          {
+            style: { fontSize: '10px', color: '#888888', marginTop: '8px' },
+          },
+          'Esta app se conecta a la nube de forma automatica, sin pedirte iniciar sesion con Google en el reloj ni el telefono. Si el error persiste: revisa que el telefono tenga internet, cerra esta pantalla de Ajustes y volvela a abrir, y proba "Sincronizar ahora" de nuevo. Tus notas siguen disponibles localmente aunque la nube no responda.'
+        ),
+      ]
+    )
+
+    return View({ style: { padding: '14px 16px' } }, [tabs, addButton, ...noteItems, diagnostics])
   },
 })
