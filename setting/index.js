@@ -132,24 +132,15 @@ AppSettingsPage({
     const noteItems = notes.map((note) => {
       const isPending = this.state.pendingDeleteId === note.id
 
+      // Cancelar sits where "Borrar" used to be (the position the user's
+      // thumb naturally lands on right after arming it) and "Si, borrar"
+      // sits on the opposite side — confirming a delete has to be a
+      // deliberate reach to a different spot, not a reflexive double-tap
+      // in the same place.
       const deleteControls = isPending
         ? View(
             { style: { display: 'flex', flexDirection: 'row', marginTop: '6px' } },
             [
-              Button({
-                label: 'Si, borrar',
-                style: {
-                  flex: 1,
-                  fontSize: '12px',
-                  lineHeight: '28px',
-                  borderRadius: '20px',
-                  background: '#B91C1C',
-                  color: 'white',
-                  textAlign: 'center',
-                  margin: '0 3px',
-                },
-                onClick: () => this.confirmDelete(note.id),
-              }),
               Button({
                 label: 'Cancelar',
                 style: {
@@ -163,6 +154,20 @@ AppSettingsPage({
                   margin: '0 3px',
                 },
                 onClick: () => this.cancelDelete(),
+              }),
+              Button({
+                label: 'Si, borrar',
+                style: {
+                  flex: 1,
+                  fontSize: '12px',
+                  lineHeight: '28px',
+                  borderRadius: '20px',
+                  background: '#B91C1C',
+                  color: 'white',
+                  textAlign: 'center',
+                  margin: '0 3px',
+                },
+                onClick: () => this.confirmDelete(note.id),
               }),
             ]
           )

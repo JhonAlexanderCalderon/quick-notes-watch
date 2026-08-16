@@ -4,20 +4,23 @@ import { push } from '@zos/router'
 import { log as Logger } from '@zos/utils'
 import { localStorage } from '@zos/storage'
 import { CATEGORIES } from '../../utils/categories'
-import { BG_COLOR, SURFACE_COLOR, SURFACE_PRESS_COLOR, TEXT_COLOR, MUTED_COLOR } from '../../utils/theme'
+import { BG_COLOR, SURFACE_COLOR, SURFACE_PRESS_COLOR, MUTED_COLOR } from '../../utils/theme'
 
 const logger = Logger.getLogger('home-page')
 const { width: DEVICE_WIDTH, height: DEVICE_HEIGHT } = getDeviceInfo()
 
 // The system status bar overlays the top ~64px of every page and eats touch
-// events there too — keep all interactive content below it.
+// events there too — keep all interactive content below it. It also already
+// shows the app name next to the clock, so this page doesn't repeat it —
+// just the one line telling you what to do here.
 const TOP = 64
+const SUBTITLE_H = 30
 
 const ACCENT_W = 6
 const ACCENT_GAP = 10
 const SIDE_PAD = 22
-const BTN_H = 78
-const BTN_GAP = 18
+const BTN_H = 74
+const BTN_GAP = 16
 
 Page({
   onInit() {
@@ -50,27 +53,16 @@ Page({
       x: 0,
       y: TOP,
       w: DEVICE_WIDTH,
-      h: 36,
-      text: 'QUICK NOTES',
-      text_size: 26,
-      color: TEXT_COLOR,
-      align_h: align.CENTER_H,
-      text_style: text_style.NONE,
-    })
-    createWidget(widget.TEXT, {
-      x: 0,
-      y: TOP + 34,
-      w: DEVICE_WIDTH,
-      h: 24,
-      text: 'Elegi una categoria',
-      text_size: 18,
+      h: SUBTITLE_H,
+      text: 'Elige una categoria',
+      text_size: 20,
       color: MUTED_COLOR,
       align_h: align.CENTER_H,
       text_style: text_style.NONE,
     })
 
     CATEGORIES.forEach((cat, i) => {
-      const y = TOP + 78 + i * (BTN_H + BTN_GAP)
+      const y = TOP + SUBTITLE_H + BTN_GAP + i * (BTN_H + BTN_GAP)
 
       createWidget(widget.FILL_RECT, {
         x: SIDE_PAD,
