@@ -1,0 +1,17 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Single personal-use app, no multi-tenancy: only two known identities
+    // may touch the one notes document — the watch's fixed anonymous
+    // identity (Side Service, cached refresh token in settingsStorage) and
+    // the owner's real Google account (used from the companion PWA).
+    match /notes/data {
+      allow read, write: if request.auth != null &&
+        request.auth.uid in [
+          'vnOzk0TyXQZ5VPJLyKC1DDVHM4b2', // watch (Side Service, anonymous)
+          'rLsBNaimg7YppLouefb3vuP50Tz2', // calderonjhon@gmail.com (PWA)
+        ];
+    }
+  }
+}
