@@ -6,6 +6,7 @@ import { localStorage } from '@zos/storage'
 import { onGesture, GESTURE_RIGHT } from '@zos/interaction'
 import { CATEGORIES } from '../../utils/categories'
 import { BG_COLOR, TEXT_COLOR, MUTED_COLOR } from '../../utils/theme'
+import { enableStayAwake } from '../../utils/stay-awake'
 
 const logger = Logger.getLogger('note-detail-page')
 const { width: DEVICE_WIDTH, height: DEVICE_HEIGHT } = getDeviceInfo()
@@ -18,6 +19,7 @@ Page({
   },
   onInit(params) {
     logger.debug('note-detail onInit params=%s', params)
+    enableStayAwake()
     const { category, noteId } = params ? JSON.parse(params) : {}
     this.state.category = category
 

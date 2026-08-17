@@ -6,6 +6,7 @@ import { onGesture, GESTURE_RIGHT } from '@zos/interaction'
 import { CATEGORIES } from '../../utils/categories'
 import { BG_COLOR } from '../../utils/theme'
 import { titleTextStyle, EMPTY_TEXT_STYLE, scrollListStyle, DEVICE_WIDTH, DEVICE_HEIGHT } from './index.style'
+import { enableStayAwake } from '../../utils/stay-awake'
 
 const logger = Logger.getLogger('notes-list-page')
 
@@ -19,6 +20,7 @@ Page({
   },
   onInit(params) {
     logger.debug('notes-list onInit params=%s', params)
+    enableStayAwake()
     const { category } = params ? JSON.parse(params) : {}
     this.state.category = category
 

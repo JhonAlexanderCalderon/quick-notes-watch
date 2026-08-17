@@ -5,6 +5,7 @@ export const CATEGORIES = [
   { id: 'personal', label: 'Datos Personales', color: 0xff9e9e },
   { id: 'ti', label: 'Datos TI', color: 0x6ee7da },
   { id: 'reuniones', label: 'Reuniones', color: 0xc4b5fd },
+  { id: 'tutoriales', label: 'Tutoriales', color: 0xfdba74 },
 ]
 
 export function emptyNotesData() {

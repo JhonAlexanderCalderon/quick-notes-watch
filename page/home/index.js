@@ -5,6 +5,7 @@ import { log as Logger } from '@zos/utils'
 import { localStorage } from '@zos/storage'
 import { CATEGORIES } from '../../utils/categories'
 import { BG_COLOR, SURFACE_COLOR, SURFACE_PRESS_COLOR, MUTED_COLOR } from '../../utils/theme'
+import { enableStayAwake } from '../../utils/stay-awake'
 
 const logger = Logger.getLogger('home-page')
 const { width: DEVICE_WIDTH, height: DEVICE_HEIGHT } = getDeviceInfo()
@@ -19,12 +20,17 @@ const SUBTITLE_H = 30
 const ACCENT_W = 6
 const ACCENT_GAP = 10
 const SIDE_PAD = 22
-const BTN_H = 74
-const BTN_GAP = 16
+// Sized to fit CATEGORIES.length items in the space below the subtitle —
+// recompute if the category count changes again.
+const BTN_GAP = 10
+const BTN_H = Math.floor(
+  (DEVICE_HEIGHT - TOP - SUBTITLE_H - BTN_GAP * (CATEGORIES.length + 1)) / CATEGORIES.length
+)
 
 Page({
   onInit() {
     logger.debug('home onInit')
+    enableStayAwake()
     const { messageBuilder } = getApp()._options.globalData
 
     // Refresh the cached copy in the background; the menu itself doesn't
