@@ -12,20 +12,20 @@
   <circle cx="256" cy="256" r="256" fill="url(#bg)"/>
 
   <!-- soft shadow under the notebook -->
-  <ellipse cx="266" cy="410" rx="130" ry="20" fill="#1e1b4b" opacity="0.3"/>
+  <ellipse cx="252" cy="396" rx="130" ry="20" fill="#1e1b4b" opacity="0.3"/>
 
   <!-- spiral binding dots -->
   <g fill="#111827">
-    <rect x="118" y="188" width="60" height="34" rx="17"/>
-    <rect x="118" y="252" width="60" height="34" rx="17"/>
-    <rect x="118" y="316" width="60" height="34" rx="17"/>
+    <rect x="104" y="172" width="60" height="34" rx="17"/>
+    <rect x="104" y="236" width="60" height="34" rx="17"/>
+    <rect x="104" y="300" width="60" height="34" rx="17"/>
   </g>
 
-  <!-- notebook body -->
-  <rect x="150" y="128" width="240" height="288" rx="28" fill="#F8FAFC"/>
+  <!-- notebook body, centered in the circle -->
+  <rect x="136" y="112" width="240" height="288" rx="28" fill="#F8FAFC"/>
 
   <!-- three color-coded lines, one per note category (personal / ti / reuniones) -->
-  <rect x="192" y="206" width="164" height="24" rx="12" fill="#FF9E9E"/>
-  <rect x="192" y="258" width="164" height="24" rx="12" fill="#6EE7DA"/>
-  <rect x="192" y="310" width="110" height="24" rx="12" fill="#C4B5FD"/>
+  <rect x="178" y="190" width="164" height="24" rx="12" fill="#FF9E9E"/>
+  <rect x="178" y="242" width="164" height="24" rx="12" fill="#6EE7DA"/>
+  <rect x="178" y="294" width="110" height="24" rx="12" fill="#C4B5FD"/>
 </svg>
